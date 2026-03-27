@@ -4,26 +4,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import deque
 
-# ==================== 全局参数 ====================
+# ==================== Global Parameters ====================
 max_x = 100
 max_y = 100
 num_nodes = 50
-P = 0.12  # 簇头比例
+P = 0.12  # Cluster head ratio
 initial_energy = 50
 energy_threshold = 10
 k1_energy_factor = 0.5
 
-# 可靠性参数
-v = 2.0  # 移动速度 (m/s)
-R_member = 30.0  # 普通成员节点通信半径 (m)
-R_ch_node = 60.0  # 簇头节点通信半径 (m) —— 来自您上传的文件
-tau = 1.0  # 时隙长度 (s)
-T_MAX = 40.0  # 最大时间 (s)
+# Reliability parameters
+v = 2.0  # Movement speed (m/s)
+R_member = 30.0  # Communication range of ordinary member nodes (m)
+R_ch_node = 60.0  # Communication range of cluster head nodes (m)
+tau = 1.0  # Time slot length (s)
+T_MAX = 40.0  # Maximum time (s)
 
 
-# ==================== 链路生存概率（基于距离）====================
+# ==================== Link Survival Probability (Distance-based) ====================
 def link_survival_probability(t, d, v, R):
-    """链路生存概率，依据论文式(7)简化模型"""
+    """Link survival probability, based on simplified model from paper Eq.(7)"""
     if t <= 0:
         return 1.0
     if d >= R or v <= 0:
@@ -32,7 +32,7 @@ def link_survival_probability(t, d, v, R):
     return max(0.0, 1.0 - t / max_t)
 
 
-# ==================== 节点类 ====================
+# ==================== Node Class ====================
 class Node:
     def __init__(self, node_id, max_x, max_y):
         self.node_id = node_id
@@ -42,11 +42,11 @@ class Node:
         self.energy = initial_energy
         self.is_cluster_head = False
         self.cluster_head = None
-        self.selected_round = -1  # 默认为成员通信范围
+        self.selected_round = -1  # Default to member communication range
         self.communication_range = R_member
 
     def set_as_cluster_head(self):
-        """将本节点设为簇头，并更新通信范围"""
+        """Set this node as cluster head and update communication range"""
         self.is_cluster_head = True
         self.communication_range = R_ch_node
 
@@ -80,7 +80,7 @@ class Node:
         return k_E * F_d
 
 
-# ==================== MANET 网络类 ====================
+# ==================== MANET Network Class ====================
 class MANET:
     def __init__(self, num_nodes, max_x, max_y):
         self.num_nodes = num_nodes
@@ -123,7 +123,7 @@ class MANET:
             node.random_walk()
 
 
-# ==================== 图构建与路径搜索 ====================
+# ==================== Graph Construction and Path Search ====================
 def build_communication_graph(manet):
     graph = {node.node_id: [] for node in manet.nodes}
     nodes = manet.nodes
@@ -160,13 +160,13 @@ def bfs_shortest_path_with_distance(graph, manet, start, goal):
     return None, None
 
 
-# ==================== 获取 k1, k2, k3（可 >1）====================
+# ==================== Get k1, k2, k3 (can be >1) ====================
 def get_k_params_multi_hop(source, target, manet):
     graph = build_communication_graph(manet)
     node_dict = {n.node_id: n for n in manet.nodes}
     result = {'k1': 0, 'k2': 0, 'k3': 0, 'valid': True}
 
-    # --- 段1: source → 其所属簇头 ---
+    # --- Segment 1: source -> its cluster head ---
     if source.is_cluster_head:
         src_ch_id = source.node_id
         result['path1'] = [source.node_id]
@@ -186,7 +186,7 @@ def get_k_params_multi_hop(source, target, manet):
         result['distances1'] = dists1
         result['k1'] = len(path1) - 1
 
-    # --- 段3: 目标簇头 → target ---
+    # --- Segment 3: target cluster head -> target ---
     if target.is_cluster_head:
         tgt_ch_id = target.node_id
         result['k2'] = 0
@@ -206,7 +206,7 @@ def get_k_params_multi_hop(source, target, manet):
         result['distances2'] = dists2_rev
         result['k2'] = len(path2_rev) - 1
 
-    # --- 段2: src_CH ↔ tgt_CH ---
+    # --- Segment 2: src_CH <-> tgt_CH ---
     if src_ch_id == tgt_ch_id:
         result['k3'] = 0
         result['path3'] = [src_ch_id]
@@ -223,7 +223,7 @@ def get_k_params_multi_hop(source, target, manet):
     return result
 
 
-# ==================== 可靠性计算 ====================
+# ==================== Reliability Calculation ====================
 def path_stability_probability(t, k_info, v=v):
     if k_info is None:
         return 0.0
@@ -251,7 +251,7 @@ def transmission_success_rate(t, k_info, tau=tau):
     return p_stable * p_data
 
 
-# ==================== 性能评估 ====================
+# ==================== Performance Evaluation ====================
 def evaluate_single_task(manet, src_id, tgt_id, time_points=None):
     if time_points is None:
         time_points = np.linspace(0, T_MAX, 100)
@@ -268,7 +268,7 @@ def evaluate_single_task(manet, src_id, tgt_id, time_points=None):
     return results, k_info
 
 
-# ==================== 可视化 ====================
+# ==================== Visualization ====================
 def visualize_path(manet, k_info, title="C-MANET with Heterogeneous Communication Ranges"):
     if not k_info or not k_info.get('valid', False):
         print("No valid path to visualize.")
@@ -322,10 +322,10 @@ def visualize_path(manet, k_info, title="C-MANET with Heterogeneous Communicatio
     plt.show()
 
 
-# ==================== 计算单对的最大传输成功率 ====================
+# ==================== Calculate Maximum Transmission Success Rate for a Single Pair ====================
 def get_max_success_rate_for_pair(src_node, tgt_node, manet, t_max=T_MAX, num_steps=200):
     """
-    计算源-目标节点对在 [0, t_max] 时间内的最大传输成功率。
+    Calculate the maximum transmission success rate for a source-target node pair within [0, t_max] time.
     """
     k_info = get_k_params_multi_hop(src_node, tgt_node, manet)
     if k_info is None:
@@ -337,22 +337,22 @@ def get_max_success_rate_for_pair(src_node, tgt_node, manet, t_max=T_MAX, num_st
         p = transmission_success_rate(t, k_info)
         if p > max_p:
             max_p = p
-        if max_p >= 1.0:  # 提前终止
+        if max_p >= 1.0:  # Early termination
             break
     return max_p
 
 
-# ==================== 穷举评估簇内/簇间平均最大可靠性 ====================
+# ==================== Exhaustive Evaluation of Average Maximum Intra/Inter-cluster Reliability ====================
 def evaluate_intra_inter_by_max_success(manet, t_max=T_MAX, num_time_steps=200):
     """
-    穷举所有无序节点对，计算每对的最大 P_success(t)，
-    按是否同簇分组，返回两类平均最大可靠性。
+    Enumerate all unordered node pairs, calculate the maximum P_success(t) for each pair,
+    group by whether they belong to the same cluster, and return the average maximum reliability for both categories.
     """
     node_dict = {node.node_id: node for node in manet.nodes}
     node_ids = sorted(node_dict.keys())
     n = len(node_ids)
 
-    # 构建 node_id -> cluster_id 映射
+    # Build node_id -> cluster_id mapping
     node_to_cluster = {}
     for node in manet.nodes:
         if node.is_cluster_head:
@@ -378,7 +378,7 @@ def evaluate_intra_inter_by_max_success(manet, t_max=T_MAX, num_time_steps=200):
             c2 = node_to_cluster.get(t_id, None)
 
             if c1 is None or c2 is None:
-                continue  # 跳过未分配簇的节点
+                continue  # Skip unassigned nodes
 
             max_p = get_max_success_rate_for_pair(s_node, t_node, manet, t_max=t_max, num_steps=num_time_steps)
 
@@ -393,18 +393,18 @@ def evaluate_intra_inter_by_max_success(manet, t_max=T_MAX, num_time_steps=200):
     return R_intra, R_inter, len(intra_list), len(inter_list)
 
 
-# ==================== 主程序 ====================
+# ==================== Main Program ====================
 def run_single_simulation():
     """
-    执行一次完整的 C-MANET 可靠性评估。
-    返回: (R_intra, R_inter)
+    Execute a complete C-MANET reliability evaluation.
+    Returns: (R_intra, R_inter)
     """
     net = MANET(num_nodes=num_nodes, max_x=max_x, max_y=max_y)
     net.random_walk_all()
     net.select_cluster_head()
     net.make_cluster()
 
-    # 构建 node_id -> cluster_id 映射（用于验证是否同簇）
+    # Build node_id -> cluster_id mapping (for verifying same cluster)
     node_to_cluster = {}
     for node in net.nodes:
         if node.is_cluster_head:
@@ -416,22 +416,22 @@ def run_single_simulation():
             cid = node.cluster_head
         node_to_cluster[node.node_id] = cid
 
-    # 验证是否有未分配节点（理论上不应有，但安全起见）
+    # Verify if there are any unassigned nodes (should not happen in theory, but for safety)
     unassigned = sum(1 for node in net.nodes if node_to_cluster[node.node_id] is None)
     if unassigned > 0:
         print(f"Warning: {unassigned} nodes unassigned in a simulation run.")
 
-    # 评估簇内/簇间最大可靠性
+    # Evaluate intra/inter-cluster maximum reliability
     R_intra, R_inter, N_intra, N_inter = evaluate_intra_inter_by_max_success(
         net, t_max=T_MAX, num_time_steps=200
     )
     return R_intra, R_inter
 
 
-# ==================== 主程序：蒙特卡洛仿真 ====================
+# ==================== Main Program: Monte Carlo Simulation ====================
 if __name__ == "__main__":
     import time
-    NUM_SIMULATIONS = 500  # 蒙特卡洛仿真次数
+    NUM_SIMULATIONS = 500  # Number of Monte Carlo simulations
     print(f"🚀 Starting Monte Carlo Simulation ({NUM_SIMULATIONS} runs)...\n")
 
     intra_reliabilities = []
@@ -443,23 +443,23 @@ if __name__ == "__main__":
         intra_reliabilities.append(R_intra)
         inter_reliabilities.append(R_inter)
 
-        # 每 50 次打印进度
+        # Print progress every 50 runs
         if k % 50 == 0 or k == NUM_SIMULATIONS:
             elapsed = time.time() - start_time
             print(f"[{k}/{NUM_SIMULATIONS}] Done | "
                   f"Intra: {R_intra:.4f}, Inter: {R_inter:.4f} | "
                   f"Elapsed: {elapsed:.1f}s")
 
-    # --- 统计结果 ---
+    # --- Statistical Results ---
     mean_intra = np.mean(intra_reliabilities)
-    std_intra = np.std(intra_reliabilities, ddof=1)  # 样本标准差
+    std_intra = np.std(intra_reliabilities, ddof=1)  # Sample standard deviation
     var_intra = np.var(intra_reliabilities, ddof=1)
 
     mean_inter = np.mean(inter_reliabilities)
     std_inter = np.std(inter_reliabilities, ddof=1)
     var_inter = np.var(inter_reliabilities, ddof=1)
 
-    # --- 打印最终统计 ---
+    # --- Print Final Statistics ---
     print("\n" + "="*60)
     print("✅ Monte Carlo Simulation Results (500 runs):")
     print(f"🔹 Intra-cluster Reliability:")
@@ -469,14 +469,14 @@ if __name__ == "__main__":
     print(f"🔹 Ratio (Mean Intra / Mean Inter) = {mean_intra / mean_inter:.2f}")
     print("="*60)
 
-    # --- 绘图：可靠性随仿真次数的变化 ---
+    # --- Plot: Reliability vs. Simulation Run Index ---
     plt.figure(figsize=(12, 6))
     sim_indices = np.arange(1, NUM_SIMULATIONS + 1)
 
     plt.plot(sim_indices, intra_reliabilities, 'r-', alpha=0.7, linewidth=1, label='Intra-cluster Reliability')
     plt.plot(sim_indices, inter_reliabilities, 'b-', alpha=0.7, linewidth=1, label='Inter-cluster Reliability')
 
-    # 添加均值参考线
+    # Add mean reference lines
     plt.axhline(mean_intra, color='red', linestyle='--', linewidth=2, label=f'Mean Intra = {mean_intra:.4f}')
     plt.axhline(mean_inter, color='blue', linestyle='--', linewidth=2, label=f'Mean Inter = {mean_inter:.4f}')
 
@@ -490,7 +490,7 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.show()
 
-    # --- 可选：绘制直方图 ---
+    # --- Optional: Plot Histograms ---
     plt.figure(figsize=(10, 4))
     plt.subplot(1, 2, 1)
     plt.hist(intra_reliabilities, bins=30, color='salmon', alpha=0.7, edgecolor='k')
