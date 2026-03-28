@@ -17,7 +17,7 @@ k1_energy_factor = 0.5
 # Reliability parameters
 v = 2.0
 R_member = 30.0
-R_ch_values = [50, 60, 70, 80, 90]
+R_ch_values = [ 70,75, 80,85, 90]
 tau = 1.0
 T_MAX = 40.0
 
