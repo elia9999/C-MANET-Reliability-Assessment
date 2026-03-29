@@ -82,8 +82,8 @@ The scripts are organized into two categories:
 | Script | Purpose | Key Outputs |
 |--------|---------|-------------|
 | `C1-Simulation of a Single Communication Task in C-MANET.py` | Simulates single source-to-target communication; computes time-varying path stability and transmission success | Network topology, communication path, P_stable(t), P_success(t) curves |
-| `C2- Evaluation of Cluster Reliability in C-MANET.py` | Single-run evaluation of intra/inter-cluster reliability with exhaustive pair enumeration | Cluster topology, reliability statistics |
-| `C3-Evaluation of Cluster Reliability Based on Monte Carlo Simulation.py` | Monte Carlo simulation (500 runs) for statistical evaluation of intra/inter-cluster reliability | Reliability distributions, histograms, convergence plots |
+| `C2-Evaluation of Cluster Reliability in C-MANET.py` | Monte Carlo simulation (500 runs) for statistical evaluation of intra/inter-cluster reliability | Reliability distributions, histograms, convergence plots |
+| `C3-Evaluation of Cluster Reliability Single Simulation.py` | Single-run evaluation of intra/inter-cluster reliability with exhaustive pair enumeration and cluster topology visualization | Cluster topology, reliability statistics |
 
 ### Experiment Scripts (E1, E2, E3)
 
@@ -140,9 +140,42 @@ python "C1-Simulation of a Single Communication Task in C-MANET.py"
 
 ---
 
-### Figure 2: Monte Carlo Cluster Reliability Statistics
+### Figure 2: Cluster Topology (Single Run)
 
-**Script:** `C3-Evaluation of Cluster Reliability Based on Monte Carlo Simulation.py`
+**Script:** `C3-Evaluation of Cluster Reliability Single Simulation.py`
+
+**What it does:**
+- Builds the network and selects cluster heads
+- Evaluates intra/inter-cluster reliability via exhaustive enumeration
+- Visualizes the cluster topology with communication ranges
+- Computes average max reliability for all intra/inter-cluster pairs
+
+**Run command:**
+```bash
+python "C3-Evaluation of Cluster Reliability Based on Monte Carlo Simulation.py"
+```
+
+**Expected outputs:**
+1. **Figure window 1:** C-MANET topology with:
+   - Red triangles: Cluster heads
+   - Light blue circles: Member nodes
+   - Communication range circles (red for CHs, blue for members)
+   - Title showing counts of intra/inter-cluster tasks
+
+2. **Console output:**
+   ```
+   [Exhaustive Evaluation by MAX P_success over [0, 40.0]s]
+   ✅ Intra-cluster Tasks: N pairs → Average Max Reliability = 0.XXXX
+   ✅ Inter-cluster Tasks: N pairs → Average Max Reliability = 0.XXXX
+
+   ✅ Exhaustive max-reliability evaluation completed.
+   ```
+
+---
+
+### Figure 3: Monte Carlo Cluster Reliability Statistics
+
+**Script:** `C2-Evaluation of Cluster Reliability in C-MANET.py`
 
 **What it does:**
 - Runs 500 Monte Carlo simulations
@@ -152,7 +185,7 @@ python "C1-Simulation of a Single Communication Task in C-MANET.py"
 
 **Run command:**
 ```bash
-python "C3-Evaluation of Cluster Reliability Based on Monte Carlo Simulation.py"
+python "C2-Evaluation of Cluster Reliability in C-MANET.py"
 ```
 
 **Expected outputs:**
@@ -168,11 +201,11 @@ python "C3-Evaluation of Cluster Reliability Based on Monte Carlo Simulation.py"
 3. **Console output:**
    ```
    🚀 Starting Monte Carlo Simulation (500 runs)...
-   
+
    [50/500] Done | Intra: 0.XXXX, Inter: 0.XXXX | Elapsed: XX.Xs
    ...
    [500/500] Done | Intra: 0.XXXX, Inter: 0.XXXX | Elapsed: XXX.Xs
-   
+
    ============================================================
    ✅ Monte Carlo Simulation Results (500 runs):
    🔹 Intra-cluster Reliability:
@@ -181,33 +214,9 @@ python "C3-Evaluation of Cluster Reliability Based on Monte Carlo Simulation.py"
        Mean = 0.XXXX, Std = 0.XXXX, Variance = 0.XXXXXX
    🔹 Ratio (Mean Intra / Mean Inter) = X.XX
    ============================================================
+
+   ✅ Monte Carlo simulation and visualization completed.
    ```
-
----
-
-### Figure 3: Cluster Topology (Single Run)
-
-**Script:** `C2- Evaluation of Cluster Reliability in C-MANET.py`
-
-**What it does:**
-- Builds the network and selects cluster heads
-- Evaluates intra/inter-cluster reliability via exhaustive enumeration
-- Visualizes the cluster topology (optional, if visualization is enabled)
-
-**Run command:**
-```bash
-python "C2- Evaluation of Cluster Reliability in C-MANET.py"
-```
-
-**Expected outputs:**
-- **Console output:**
-  ```
-  🚀 Starting Monte Carlo Simulation (500 runs)...
-  
-  [50/500] Done | Intra: 0.XXXX, Inter: 0.XXXX | Elapsed: XX.Xs
-  ...
-  ✅ Monte Carlo simulation and visualization completed.
-  ```
 
 ---
 
