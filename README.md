@@ -85,13 +85,18 @@ The scripts are organized into two categories:
 | `C2-Evaluation of Cluster Reliability in C-MANET.py` | Monte Carlo simulation (500 runs) for statistical evaluation of intra/inter-cluster reliability | Reliability distributions, histograms, convergence plots |
 | `C3-Evaluation of Cluster Reliability Single Simulation.py` | Single-run evaluation of intra/inter-cluster reliability with exhaustive pair enumeration and cluster topology visualization | Cluster topology, reliability statistics |
 
-### Experiment Scripts (E1, E2, E3)
+### Experiment Scripts (E1–E8)
 
 | Script | Purpose | Key Outputs |
 |--------|---------|-------------|
-| `E1-Correlated-mobility experiments.py` | Sensitivity study: evaluates reliability across different R_ch_node values (50-95m) | CSV results, R_ch_node vs. reliability curves |
-| `E2-interference-sensitivity experiment.py` | Monte Carlo sensitivity study on interference effects (R_ch_node: 50-95m) | CSV results, interference vs. reliability table |
-| `E3-comparative experiment.py` | Comparative study: C-MANET vs. traditional MANET (no clustering) across R_ch_node values | CSV results, comparative reliability analysis |
+| `E1-Simulation result of C-MANET.py` | Visualizes C-MANET network topology and communication paths at multiple time points | Network snapshots, path visualization |
+| `E2-Path stability probability.py` | Analytical Monte Carlo study of path stability probability as a function of time | P_stable(t) curves |
+| `E3-Tramsmission success rate.py` | Analytical Monte Carlo study of transmission success rate under slot constraints | P_success(t) curves |
+| `E4-Reliability trend-cluster ratio.py` | Monte Carlo sensitivity study: reliability vs. cluster head ratio (P: 0.10–0.28) | Excel results, trend curves |
+| `E5-Reliability trend-CH communication range.py` | Monte Carlo sensitivity study: reliability vs. CH communication range (R_ch: 50–95m) | Excel results, trend curves |
+| `E6-Correlated-mobility experiments.py` | Correlated vs. independent mobility comparison across R_ch values (50–95m) | Excel results, comparative analysis |
+| `E7-interference-sensitivity experiment.py` | Sensitivity study on interference effects across R_ch values (50–95m) | Excel results, interference vs. reliability table |
+| `E8-comparative experiment.py` | C-MANET vs. flat MANET comparison with statistical significance tests | Excel results, t-test analysis |
 
 ---
 
@@ -220,25 +225,134 @@ python "C2-Evaluation of Cluster Reliability in C-MANET.py"
 
 ---
 
-### Experiment Results (E1, E2, E3)
+### Experiment Results (E1–E8)
 
-**Scripts:** `E1-Correlated-mobility experiments.py`, `E2-interference-sensitivity experiment.py`, `E3-comparative experiment.py`
+#### E1: C-MANET Simulation Visualization
 
-**What they do:**
-- Run parameter sweeps across different R_ch_node values (50-95m)
-- Save results to CSV files for post-processing
-- Generate comparative analyses
+**Script:** `E1-Simulation result of C-MANET.py`
 
-**Run commands:**
+**What it does:**
+- Builds a C-MANET topology and visualizes the network at multiple time points
+- Shows cluster heads, member nodes, communication ranges, and the communication path
+- Displays path stability and transmission success metrics
+
+**Run command:**
 ```bash
-python "E1-Correlated-mobility experiments.py"
-python "E2-interference-sensitivity experiment.py"
-python "E3-comparative experiment.py"
+python "E1-Simulation result of C-MANET.py"
 ```
 
-**Expected outputs:**
-- **CSV files:** Results saved to `results/` directory
-- **Console output:** Summary tables showing reliability metrics across parameter values
+---
+
+#### E2: Path Stability Probability
+
+**Script:** `E2-Path stability probability.py`
+
+**What it does:**
+- Computes path stability probability analytically using Monte Carlo integration
+- Generates P_stable(t) curves for different parameter configurations
+- No network simulation — purely analytical link survival probability
+
+**Run command:**
+```bash
+python "E2-Path stability probability.py"
+```
+
+---
+
+#### E3: Transmission Success Rate
+
+**Script:** `E3-Tramsmission success rate.py`
+
+**What it does:**
+- Computes transmission success rate analytically under slot constraints
+- Generates P_success(t) curves
+- No network simulation — purely analytical model
+
+**Run command:**
+```bash
+python "E3-Tramsmission success rate.py"
+```
+
+---
+
+#### E4: Reliability Trend vs. Cluster Ratio
+
+**Script:** `E4-Reliability trend-cluster ratio.py`
+
+**What it does:**
+- Monte Carlo parameter sweep across cluster head ratios (P: 0.10–0.28)
+- 100 MC runs per setting, exhaustive intra/inter-cluster evaluation
+- Saves results to Excel for trend analysis
+
+**Run command:**
+```bash
+python "E4-Reliability trend-cluster ratio.py"
+```
+
+---
+
+#### E5: Reliability Trend vs. CH Communication Range
+
+**Script:** `E5-Reliability trend-CH communication range.py`
+
+**What it does:**
+- Monte Carlo parameter sweep across CH communication ranges (R_ch: 50–95m)
+- 100 MC runs per setting, exhaustive intra/inter-cluster evaluation
+- Saves results to Excel for trend analysis
+
+**Run command:**
+```bash
+python "E5-Reliability trend-CH communication range.py"
+```
+
+---
+
+#### E6: Correlated Mobility Experiments
+
+**Script:** `E6-Correlated-mobility experiments.py`
+
+**What it does:**
+- Compares independent vs. correlated mobility across R_ch_node values (50–95m)
+- 200 MC runs per setting
+- Saves results to Excel with 95% confidence intervals
+
+**Run command:**
+```bash
+python "E6-Correlated-mobility experiments.py"
+```
+
+---
+
+#### E7: Interference Sensitivity Experiment
+
+**Script:** `E7-interference-sensitivity experiment.py`
+
+**What it does:**
+- Fixed interference sensitivity study across R_ch_node values (50–95m)
+- 200 MC runs per setting
+- Saves results to Excel
+
+**Run command:**
+```bash
+python "E7-interference-sensitivity experiment.py"
+```
+
+---
+
+#### E8: Comparative Experiment (C-MANET vs. Flat MANET)
+
+**Script:** `E8-comparative experiment.py`
+
+**What it does:**
+- Compares C-MANET (clustered) vs. flat MANET reliability across R_ch values
+- 500 MC runs per setting
+- Welch t-tests and confidence interval non-overlap analysis
+- Saves results to Excel
+
+**Run command:**
+```bash
+python "E8-comparative experiment.py"
+```
 
 ---
 
@@ -256,7 +370,7 @@ python "E3-comparative experiment.py"
 | Time slot duration | τ (tau) | 1.0 s | Transmission slot length |
 | Max simulation time | T_MAX | 40.0 s | Maximum time for evaluation |
 | Interference decay | β_I | 0.7 | Interference attenuation factor |
-| Correlation strength | ρ | 0.8 | Group mobility correlation (E1) |
+| Correlation strength | ρ | 0.8 | Group mobility correlation (E6) |
 | Monte Carlo runs | NUM_MC | 200-500 | Number of MC iterations |
 
 ---

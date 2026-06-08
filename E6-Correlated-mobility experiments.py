@@ -10,7 +10,7 @@ max_y = 100
 num_nodes = 50
 
 P = 0.12
-initial_energy = 50
+initial_energy = 30
 energy_threshold = 10
 k1_energy_factor = 0.5
 
@@ -21,7 +21,7 @@ R_ch_values = [50, 55, 60, 65, 70, 75, 80, 85, 90, 95]
 tau = 1.0
 T_MAX = 40.0
 
-NUM_MC = 200
+NUM_MC = 500
 
 # Correlated mobility parameters
 rho = 0.8

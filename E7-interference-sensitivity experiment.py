@@ -9,7 +9,7 @@ max_x = 100
 max_y = 100
 num_nodes = 50
 P = 0.12
-initial_energy = 50
+initial_energy = 30
 energy_threshold = 10
 k1_energy_factor = 0.5
 
@@ -31,7 +31,7 @@ def H1_tau(interference_level, beta=BETA_I):
     return float(np.exp(-beta * max(0.0, interference_level)))
 
 # ==================== Monte Carlo parameters ====================
-MC_RUNS = 200
+MC_RUNS = 500
 
 # ==================== Link survival probability ====================
 def link_survival_probability(t, d, v, R):
